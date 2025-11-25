@@ -1,7 +1,4 @@
-import { loadSmartSources } from '../core/data-loader.js';
-import { loadPluginSettings } from '../core/config-loader.js';
-import { LocalEmbeddingService } from '../core/local-embedding-service.js';
-import { performLookupWithFilters, validateAndPrepareQuery, getLookupStatistics } from '../core/lookup.js';
+import { SharedLookupService } from '../services/shared-lookup-service.js';
 import { formatPlaintext } from '../formatters/plaintext.js';
 import { formatJson } from '../formatters/json.js';
 
@@ -25,14 +22,6 @@ export async function lookupCommand(query, options = {}) {
   } = options;
 
   try {
-    // Validate and prepare query
-    const validatedQuery = validateAndPrepareQuery(query);
-
-    if (verbose) {
-      console.log(`Query: "${validatedQuery}"`);
-      console.log(`Limit: ${limit}, Format: ${format}, Skip blocks: ${skipBlocks}`);
-    }
-
     // Resolve vault path
     const vaultPath = vaultOption || process.env.OBSIDIAN_VAULT;
 
@@ -41,55 +30,14 @@ export async function lookupCommand(query, options = {}) {
       process.exit(1);
     }
 
-    // Load plugin settings and smart sources
-    console.log('Loading smart-connections data...');
-    const [settings, sources] = await Promise.all([
-      loadPluginSettings(vaultPath),
-      loadSmartSources(vaultPath)
-    ]);
+    // Create shared lookup service
+    const lookupService = new SharedLookupService(vaultPath, { verbose });
 
-    if (Object.keys(sources).length === 0) {
-      console.error('No smart sources found. Ensure smart-connections plugin has generated embeddings.');
-      process.exit(1);
-    }
-
-    // Show statistics if verbose
-    if (verbose) {
-      const stats = getLookupStatistics(sources);
-      console.log(`Found ${stats.sourcesWithEmbeddings} sources with embeddings`);
-      console.log(`Average embedding dimension: ${stats.averageEmbeddingDimension}`);
-    }
-
-    // Initialize embedding service
-    console.log('Initializing embedding service...');
-    const embeddingService = new LocalEmbeddingService(vaultPath, settings);
-    await embeddingService.initialize();
-
-    // Validate model compatibility
-    const sampleEmbeddings = Object.values(sources).filter(s => s.vec).slice(0, 5);
-    embeddingService.validateExactModelCompatibility(sampleEmbeddings);
-
-    if (verbose) {
-      const modelInfo = embeddingService.getModelInfo();
-      console.log(`Using model: ${modelInfo.modelId} (${modelInfo.dimensions} dimensions)`);
-    }
-
-    // Generate query embedding
-    console.log('Generating query embedding...');
-    const embeddingResult = await embeddingService.generateEmbedding(validatedQuery);
-
-    if (verbose) {
-      console.log(`Generated embedding with ${embeddingResult.dimensions} dimensions`);
-    }
+    // Initialize service (this will show progress messages if verbose)
+    await lookupService.initialize();
 
     // Perform semantic lookup
-    console.log('Performing semantic search...');
-    const results = performLookupWithFilters(
-      sources,
-      embeddingResult.vec,
-      settings,
-      { limit, skipBlocks }
-    );
+    const results = await lookupService.lookup(query, { limit, skipBlocks });
 
     if (results.length === 0) {
       console.log('No results found for your query.');
@@ -100,12 +48,12 @@ export async function lookupCommand(query, options = {}) {
     // Format and output results
     const output = format === 'json'
       ? formatJson(results)
-      : formatPlaintext(results, settings);
+      : formatPlaintext(results, lookupService.settings);
 
     console.log(output);
 
     if (verbose && format === 'plaintext') {
-      console.log(`\nFound ${results.length} semantic matches for: "${validatedQuery}"`);
+      console.log(`\nFound ${results.length} semantic matches for: "${query}"`);
     }
 
   } catch (error) {

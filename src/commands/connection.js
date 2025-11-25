@@ -1,9 +1,6 @@
-import { loadSmartSources } from '../core/data-loader.js';
-import { loadPluginSettings } from '../core/config-loader.js';
-import { findConnections, applyExclusionFilters } from '../core/search.js';
+import { SharedConnectionService } from '../services/shared-connection-service.js';
 import { formatPlaintext } from '../formatters/plaintext.js';
 import { formatJson } from '../formatters/json.js';
-import { resolveNotePath } from '../utils/path-resolver.js';
 
 /**
  * Execute connection command
@@ -11,7 +8,15 @@ import { resolveNotePath } from '../utils/path-resolver.js';
  * @param {Object} options - Command options
  */
 export async function connectionCommand(notePath, options) {
-  const vaultPath = options.vault || process.env.OBSIDIAN_VAULT;
+  const {
+    vault: vaultOption,
+    format = 'plaintext',
+    limit = 20,
+    skipBlocks = false,
+    verbose = false
+  } = options;
+
+  const vaultPath = vaultOption || process.env.OBSIDIAN_VAULT;
 
   if (!vaultPath) {
     console.error('Error: Vault path not specified. Use --vault or set OBSIDIAN_VAULT.');
@@ -19,28 +24,32 @@ export async function connectionCommand(notePath, options) {
   }
 
   try {
-    // Load data
-    const sources = loadSmartSources(vaultPath);
-    const settings = loadPluginSettings(vaultPath);
+    // Create shared connection service
+    const connectionService = new SharedConnectionService(vaultPath, { verbose });
 
-    // Resolve note path (handle absolute vs relative)
-    const resolvedPath = resolveNotePath(notePath, vaultPath);
+    // Initialize service (this will show progress messages if verbose)
+    await connectionService.initialize();
 
     // Find connections
-    const skipBlocks = settings.smart_view_filter?.exclude_blocks_from_source_connections || false;
-    let results = findConnections(sources, resolvedPath, {
-      limit: parseInt(options.limit) || 20,
-      skipBlocks
+    const result = await connectionService.findConnections(notePath, {
+      limit,
+      includeBlocks: !skipBlocks
     });
 
-    // Apply exclusion filters from settings
-    results = applyExclusionFilters(results, settings);
+    if (result.connections.length === 0) {
+      console.log(`No connections found for: ${result.queryNote}`);
+      return;
+    }
 
     // Format and output
-    if (options.format === 'json') {
-      console.log(formatJson(results));
-    } else {
-      console.log(formatPlaintext(results, settings));
+    const output = format === 'json'
+      ? formatJson(result.connections)
+      : formatPlaintext(result.connections, connectionService.settings);
+
+    console.log(output);
+
+    if (verbose && format === 'plaintext') {
+      console.log(`\nFound ${result.connections.length} connections for: ${result.queryNote}`);
     }
 
   } catch (error) {

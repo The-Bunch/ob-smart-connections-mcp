@@ -18,6 +18,7 @@ program
   .option('--vault <path>', 'Path to Obsidian vault (or use OBSIDIAN_VAULT env var)')
   .option('--format <type>', 'Output format: plaintext or json', 'plaintext')
   .option('--limit <number>', 'Maximum number of results', '20')
+  .option('--verbose', 'Show detailed information about the connection process')
   .action(connectionCommand);
 
 program
