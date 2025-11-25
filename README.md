@@ -7,7 +7,6 @@ Command-line tool and MCP (Model Context Protocol) server for Smart Connections 
 - 🔍 **Find Connections** - Discover notes semantically similar to a specific note
 - 🔎 **Semantic Search** - Perform text-based searches across your vault
 - 📊 **Stats** - View embedding statistics and vault coverage
-- ✅ **Validate** - Check data integrity and embedding health
 - 📤 **Multiple Outputs** - Plain text or JSON format
 - 🚀 **Standalone** - Works without Obsidian running
 - 🤖 **MCP Server** - Model Context Protocol server for AI agent integration
@@ -19,12 +18,45 @@ Command-line tool and MCP (Model Context Protocol) server for Smart Connections 
 
 ## Installation
 
+### CLI Installation
+
 ```bash
 # Install globally
-npm install -g @smart-connections/cli
+npm install -g @yejianye/smart-connections-mcp
+```
 
-# Or use with npx (no install needed)
-npx @smart-connections/cli <command>
+After installing globally, you can use the `smart-cli` command:
+```bash
+export OBSIDIAN_VAULT=/path/to/your/vault
+smart-cli connection "path/to/note.md"
+smart-cli lookup "AI Coding"
+smart-cli stats
+```
+
+### MCP Server Installation
+
+Install the MCP server for AI agent integration (e.g., with Claude Desktop):
+
+**Option 1: Using Claude MCP CLI**
+```bash
+claude mcp add ob-smart-connections -e OBSIDIAN_VAULT=/path/to/your/vault  @yejianye/smart-connections-mcp
+```
+
+**Option 2: Manual Configuration**
+
+Add the following json to your MCP client config (for example, `claude_desktop_config.json`):
+```json
+{
+  "mcpServers": {
+    "smart-connections": {
+      "command": "npx",
+      "args": ["-y", "@yejianye/smart-connections-mcp"],
+      "env": {
+        "OBSIDIAN_VAULT": "/path/to/your/vault"
+      }
+    }
+  }
+}
 ```
 
 ## Usage
@@ -147,32 +179,9 @@ smart-cli lookup "project management" --format=json
 
 ---
 
-## MCP Server Usage
+## MCP Tools
 
-The MCP (Model Context Protocol) server provides AI agents with access to Smart Connections functionality for programmatic search and analysis of Obsidian vaults.
-
-### Setup
-
-1. **Install dependencies**:
-```bash
-npm install
-```
-
-2. **Configure your AI client** (Claude Desktop example):
-Add to your `claude_desktop_config.json`:
-```json
-{
-  "mcpServers": {
-    "smart-connections": {
-      "command": "node",
-      "args": ["/path/to/smart-connections-cli/mcp-server.js"],
-      "env": {
-        "OBSIDIAN_VAULT": "/path/to/your/vault"
-      }
-    }
-  }
-}
-```
+The MCP server provides the following tools for AI agents:
 
 ### Available MCP Tools
 
@@ -225,10 +234,8 @@ Validate Smart Connections data integrity.
 ### MCP Configuration
 
 Configure vault access via:
-- **Environment Variable**: `OBSIDIAN_VAULT=/path/to/vault`
+- **Environment Variable**: `OBSIDIAN_VAULT=/path/to/vault` (set during installation)
 - **Tool Arguments**: Pass `vault_path` parameter to each tool call
-
-For detailed MCP documentation and examples, see [MCP-README.md](./MCP-README.md).
 
 ---
 
@@ -287,22 +294,6 @@ The note may:
 
 Run `smart-cli validate` to diagnose issues.
 
-## Roadmap
-
-### v1.0.0 (Current)
-- ✅ Connection finding
-- ✅ Semantic search (lookup)
-- ✅ Stats and validation
-- ✅ Plain text and JSON output
-- ✅ MCP server for AI agent integration
-
-### v2.0.0 (Planned)
-- 🔮 Enhanced lookup with query embeddings
-- 🔮 Support for local embedding models (transformers.js)
-- 🔮 Support for API-based embeddings
-- 🔮 Interactive result browsing
-- 🔮 Advanced MCP features
-
 ## License
 
 MIT
@@ -310,5 +301,5 @@ MIT
 ## Links
 
 - [Smart Connections Plugin](https://github.com/brianpetro/obsidian-smart-connections)
-- [Report Issues](https://github.com/smart-connections/cli/issues)
 - [Smart Connections Website](https://smartconnections.app)
+- [Report Issues](https://github.com/yejianye/ob-smart-connections-mcp/issues)

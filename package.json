@@ -1,12 +1,12 @@
 {
-  "name": "@smart-connections/cli",
+  "name": "@yejianye/smart-connections-mcp",
   "version": "1.0.0",
-  "description": "CLI tool and MCP server for Smart Connections - semantic search for Obsidian vaults",
+  "description": "MCP server for Smart Connections - semantic search for Obsidian vaults",
   "type": "module",
-  "main": "src/index.js",
+  "main": "mcp-server.js",
   "bin": {
     "smart-cli": "./bin/smart-cli.js",
-    "smart-connections-mcp": "./mcp-server.js"
+    "smart-connections-mcp": "./bin/smart-connections-mcp.js"
   },
   "scripts": {
     "test": "node --test",
@@ -22,9 +22,11 @@
     "notes",
     "mcp",
     "model-context-protocol",
-    "ai-agent"
+    "ai-agent",
+    "claude",
+    "anthropic"
   ],
-  "author": "Smart Connections",
+  "author": "Jianye Ye",
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0"
@@ -39,6 +41,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/smart-connections/cli.git"
-  }
+    "url": "https://github.com/yejianye/ob-smart-connections-mcp.git"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "tools/",
+    "mcp-server.js",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "bugs": {
+    "url": "https://github.com/yejianye/ob-smart-connections-mcp/issues"
+  },
+  "homepage": "https://github.com/yejianye/ob-smart-connections-mcp#readme"
 }
