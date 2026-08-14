@@ -1,4 +1,5 @@
 import path from 'path';
+import { buildExcerpt } from './lookup.js';
 import { SharedConnectionService } from '../src/services/shared-connection-service.js';
 
 export const connectionTool = {
@@ -65,7 +66,9 @@ export const connectionTool = {
             path: absolutePath,
             title: connection.name || connection.path.split('/').pop()?.replace('.md', ''),
             similarity: connection.score,
-            excerpt: connection.excerpt || '',
+            excerpt: connection.excerpt
+              || buildExcerpt(targetVaultPath, connection.item?.path || connection.path || '', new Map())
+              || '',
             type: connection.type || 'note',
           };
         }),
