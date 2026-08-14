@@ -1,3 +1,7 @@
+> **Fork.** The Bunch's fork of `yejianye/ob-smart-connections-mcp`, carrying support for the
+> Smart Connections 4.8 vec-index store (migrated vaults otherwise read a stale index with no
+> error) plus real excerpts. See **[FORK.md](FORK.md)**.
+
 # Smart Connections CLI & MCP Server
 
 Command-line tool and MCP (Model Context Protocol) server for Smart Connections - find semantic connections in your Obsidian vaults.
