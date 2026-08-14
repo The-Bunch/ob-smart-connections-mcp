@@ -4,3 +4,9 @@ node_modules/
 .env
 dist/
 package-lock.json
+
+# local working backups
+*.bak
+*.bak.*
+*.bak-*
+*.bak2-*
