@@ -32,8 +32,8 @@ export class LocalEmbeddingService {
     this.modelId = modelInfo.modelId;
     this.dimensions = modelInfo.dimensions;
 
-    console.log(`Loading embedding model: ${this.modelId}`);
-    console.log('This may take a moment on first run...');
+    console.error(`Loading embedding model: ${this.modelId}`);
+    console.error('This may take a moment on first run...');
 
     try {
       // Initialize the embedding pipeline
@@ -44,7 +44,7 @@ export class LocalEmbeddingService {
         dtype: 'q8'
       });
 
-      console.log('Embedding model loaded successfully');
+      console.error('Embedding model loaded successfully');
     } catch (error) {
       throw new Error(
         `Failed to load embedding model ${this.modelId}: ${error.message}\n` +
@@ -68,7 +68,7 @@ export class LocalEmbeddingService {
         // Extract model from smart_sources.embed_model.transformers.model_key
         const modelKey = config.smart_sources?.embed_model?.transformers?.model_key;
         if (modelKey) {
-          console.log(`Found model configuration: ${modelKey}`);
+          console.error(`Found model configuration: ${modelKey}`);
           const modelId = this.mapModelNameToTransformers(modelKey);
           if (modelId) {
             // Determine dimensions based on model
