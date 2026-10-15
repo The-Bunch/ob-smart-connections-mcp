@@ -1,4 +1,4 @@
-import { pipeline } from '@xenova/transformers';
+import { pipeline } from '@huggingface/transformers';
 import fs from 'fs';
 import path from 'path';
 
@@ -38,7 +38,10 @@ export class LocalEmbeddingService {
     try {
       // Initialize the embedding pipeline
       this.embeddingPipeline = await pipeline('feature-extraction', this.modelId, {
-        quantized: true // Use quantized models for better performance
+        // 8-bit quantised weights (onnx/model_quantized.onnx) — the same file the
+        // old `quantized: true` option loaded, so query vectors stay comparable
+        // with the vault's stored embeddings.
+        dtype: 'q8'
       });
 
       console.log('Embedding model loaded successfully');
