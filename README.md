@@ -1,4 +1,4 @@
-> **Fork.** The Bunch's fork of `yejianye/ob-smart-connections-mcp`, carrying support for the
+> **Fork.** helloBill's fork of `yejianye/ob-smart-connections-mcp`, carrying support for the
 > Smart Connections 4.8 vec-index store (migrated vaults otherwise read a stale index with no
 > error) plus real excerpts. See **[FORK.md](FORK.md)**.
 

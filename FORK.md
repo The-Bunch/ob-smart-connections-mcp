@@ -1,6 +1,6 @@
 # Fork notes
 
-This is **The Bunch's fork** of [`yejianye/ob-smart-connections-mcp`](https://github.com/yejianye/ob-smart-connections-mcp).
+This is **helloBill's fork** of [`yejianye/ob-smart-connections-mcp`](https://github.com/yejianye/ob-smart-connections-mcp).
 We run it as the retrieval layer over an Obsidian vault, shared by several MCP
 clients. All credit for the original tool goes upstream; this fork exists to carry
 three fixes we needed, and we would rather they land upstream than live here.
@@ -82,5 +82,4 @@ its own. Please refer to upstream for any reuse beyond that.
 
 ---
 
-Maintained by [The Bunch](https://github.com/The-Bunch) — the team behind
-[hellobill.app](https://hellobill.app).
+Maintained by [helloBill](https://hellobill.com) (Hello Bill Limited).
